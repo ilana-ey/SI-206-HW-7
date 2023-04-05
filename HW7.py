@@ -1,7 +1,7 @@
 
-# Your name:
-# Your student id:
-# Your email:
+# Your name: Ilana Eydelman
+# Your student id: 89832006
+# Your email: ilanaeyd@umich.edu
 # List who you have worked with on this project:
 
 import unittest
