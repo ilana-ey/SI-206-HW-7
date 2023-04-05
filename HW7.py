@@ -9,6 +9,8 @@ import sqlite3
 import json
 import os
 
+#hello
+
 def read_data(filename):
     full_path = os.path.join(os.path.dirname(__file__), filename)
     f = open(full_path)
@@ -52,8 +54,20 @@ def make_positions_table(data, cur, conn):
 #     the position in the Positions table we 
 #     created for you -- see make_positions_table above for details.
 
+
 def make_players_table(data, cur, conn):
-    pass
+    cur.execute("CREATE TABLE IF NOT EXISTS Players (id INTERGER PRIMARY KEY, name TEXT, position_id INTEGER, birthyear INTEGER, nationality TEXT)")
+    conn.commit()
+    for player in data:
+        id = int(player["id"])
+        name = player["name"]
+        position = player[]
+        cur.execute("SELECT position_id FROM Positions")
+        position_id = int(cur.fetchone()[0])
+        birthyear = player["birthyear"]
+        nationality = player["nationality"]
+        cur.execute("INSERT INTO Players(id, name, position_id, birthyear, nationality) VALUES (?,?,?,?,?)", (id, name, position_id, birthyear, nationality))
+        conn.commit()
 
 ## [TASK 2]: 10 points
 # Finish the function nationality_search
