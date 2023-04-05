@@ -79,12 +79,11 @@ def make_players_table(data, cur, conn):
         # the player's name, their position_id, and their nationality.
 
 def nationality_search(countries, cur, conn):
-    ct_players= []
     for country in countries:
         cur.execute("SELECT name, position_id, nationality FROM Players WHERE nationality = ?", (country,))
-        ct_players += cur.fetchall()
     conn.commit()
-    return ct_players
+    return cur.fetchall()
+    
     
 
 
@@ -170,10 +169,20 @@ def position_birth_search(position, age, cur, conn):
 #     the passed year. 
 
 def make_winners_table(data, cur, conn):
-    pass
+    cur.execute("CREATE TABLE IF NOT EXISTS Winners (id INTEGER PRIMARY KEY, name TEXT)")
+    for season in data:
+        if season["winner"] is not None:
+            cur.execute("INSERT INTO Winners (id,name) VALUES (?,?)", (season["winner"]["id"], season["winner"]["name"]))
+    conn.commit()
 
 def make_seasons_table(data, cur, conn):
-    pass
+    cur.execute("CREATE TABLE IF NOT EXISTS Seasons (id INTEGER PRIMARY KEY, winner_id TEXT, end_year INTEGER)")
+    for season in data:
+        if season["winner"]:
+            cur.execute("SELECT id FROM winners WHERE name = ?", (season["winner"]["name"],))
+            winner_id = cur.fetchone()
+            cur.execute("INSERT INTO Seasons (id, winner_id, end_year) VALUES (?,?,?)",(season["id"], winner_id[0], int(season["end_year"])))
+            
 
 def winners_since_search(year, cur, conn):
     pass
@@ -234,8 +243,8 @@ class TestAllMethods(unittest.TestCase):
     def test_make_winners_table(self):
         self.cur2.execute('SELECT * from Winners')
         winners_list = self.cur2.fetchall()
-
-        pass
+        self.assertEqual(winners_list, [(0, "id", "INTEGER", 0, None, 1), (1, "name", "TEXT", 0, None, 0)])
+        self.assertEqual(winners_list,[(66, "Leicester City"), (65, "Manchester City"), (64, "Manchester United")])
 
     def test_make_seasons_table(self):
         self.cur2.execute('SELECT * from Seasons')
