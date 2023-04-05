@@ -65,7 +65,7 @@ def make_players_table(data, cur, conn):
         position_id = int(cur.fetchone()[0])
         birthyear = int(player["dateOfBirth"][:4])
         nationality = player["nationality"]
-        cur.execute("INSERT INTO Players(id, name, position_id, birthyear, nationality) VALUES (?,?,?,?,?)", (id, name, position_id, birthyear, nationality))
+        cur.execute("INSERT OR IGNORE INTO Players(id, name, position_id, birthyear, nationality) VALUES (?,?,?,?,?)", (id, name, position_id, birthyear, nationality))
     conn.commit()
 
 ## [TASK 2]: 10 points
@@ -79,7 +79,14 @@ def make_players_table(data, cur, conn):
         # the player's name, their position_id, and their nationality.
 
 def nationality_search(countries, cur, conn):
-    pass
+    ct_players= []
+    for country in countries:
+        cur.execute("SELECT name, position_id, nationality FROM Players WHERE nationality = ?", (country,))
+        ct_players += cur.fetchall()
+    conn.commit()
+    return ct_players
+    
+
 
 ## [TASK 3]: 10 points
 # finish the function birthyear_nationality_search
@@ -98,7 +105,10 @@ def nationality_search(countries, cur, conn):
 
 
 def birthyear_nationality_search(age, country, cur, conn):
-    pass
+    birthyear = 2023 - age
+    cur.execute("SELECT name, nationality, birthyear FROM players WHERE nationality = ? AND birthyear < ?", (country, birthyear))
+    conn.commit()
+    return cur.fetchall()
 
 ## [TASK 4]: 15 points
 # finish the function position_birth_search
@@ -118,7 +128,10 @@ def birthyear_nationality_search(age, country, cur, conn):
     # HINT: You'll have to use JOIN for this task.
 
 def position_birth_search(position, age, cur, conn):
-       pass
+    birthyear = 2023 - age
+    cur.execute("SELECT players.name, players.position_id, players.birthyear FROM players JOIN positions ON players.position_id = positions.id WHERE positions.position = ? AND players.birthyear > ?", (position, birthyear))
+    conn.commit()
+    return cur.fetchall()
 
 
 # [EXTRA CREDIT]
